@@ -43,7 +43,7 @@ optional arguments:
 *   -p api password       **(Required)** Your API username
 *   -v                    **(Optional)** List full output (not only alerts), default: off
 *   -f capacity           **(Not required)** Raise alert if limit is hit: 80,90 as percent for WARNING,CRITICAL
-*   -c all mem psu fan disk ports volume volgroup alert [all mem psu fan disk ports volume volgroup alert ...] **(Required)** List of checks, choose all, one or few.
+*   -c all mem psu fan disk ports volume volgroup alert capacity [all mem psu fan disk ports volume volgroup alert ...] **(Required)** List of checks, choose all, one or few.
 
             Short description of checks option:
             all - show all checks
@@ -55,4 +55,5 @@ optional arguments:
             volume - show volumes, checks if volume is operating normally
             volgroup - check volume groups, checks if it's protectable and write order consistent
             alert - show Critical and Major alerts (raise alert if there is no acknowledged)
+            capacity - check total capacity
 
