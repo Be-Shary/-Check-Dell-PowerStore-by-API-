@@ -172,6 +172,7 @@ if __name__ == "__main__":
             volume - show volumes, checks if volume is operating normally
             volgroup - check volume groups, checks if it's protectable and write order consistent
             alert - show Critical and Major alerts (raise alert if there is no acknowledged)
+            capacity - check total capacity
                    """,
             formatter_class=RawTextHelpFormatter,
             usage=SUPPRESS)
@@ -185,7 +186,7 @@ if __name__ == "__main__":
                             required=False, default="0,0")
         parser.add_argument("-c", metavar="all mem psu fan disk ports volume volgroup alert",
                             help="(Required) List of checks, choose all, one or few.",
-                            nargs="+", choices=["all", "mem", "psu", "fan", "disk", "ports", "volume", "volgroup", "alert"], required=True)
+                            nargs="+", choices=["all", "mem", "psu", "fan", "disk", "ports", "volume", "volgroup", "alert","capacity"], required=True)
         args = parser.parse_args()
     except SystemExit as error:
         if error.code == 2:
@@ -225,14 +226,15 @@ if __name__ == "__main__":
         check_alerts(hostname)
     if "ports" in checks and not "all" in checks:
         check_ports(hostname)
+    if "capacity" in checks and not "all" in checks:
+        check_capacity(hostname, free_limit)
     if "all" in checks:
         check_volumes(hostname)
         check_alerts(hostname)
         check_volumegroup(hostname)
         check_ports(hostname)
-
-    if free_limit != 0:
         check_capacity(hostname, free_limit)
+
     if exit_code == 0:
         if verbose:
             print("OK: No problem detected.\n" + output)
