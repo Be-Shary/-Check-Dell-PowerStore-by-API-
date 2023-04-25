@@ -183,7 +183,7 @@ if __name__ == "__main__":
                             default=False, action="store_true")
         parser.add_argument("-f", metavar="capacity",
                             help="(Not required) Raise alert if limit is hit: 80,90 as percent for WARNING,CRITICAL",
-                            required=False, default="0,0")
+                            required=False, default="80,90")
         parser.add_argument("-c", metavar="all mem psu fan disk ports volume volgroup alert",
                             help="(Required) List of checks, choose all, one or few.",
                             nargs="+", choices=["all", "mem", "psu", "fan", "disk", "ports", "volume", "volgroup", "alert","capacity"], required=True)
