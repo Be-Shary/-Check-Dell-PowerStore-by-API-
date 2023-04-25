@@ -112,7 +112,7 @@ def check_capacity(hostname, limit):
             output += " (!!)"
         output += "\n-----------------------------"
     if perf:
-        output += f'| USED={str(round(used_space, 2))}[TB];{limit[0]};{limit[1]};0;{str(round(total_space))}'
+        output += f'| USED={str(round(used_space, 2))}TB;{limit[0]};{limit[1]};0;{str(round(total_space))}'
 
 
 def check_volumegroup(hostname):
