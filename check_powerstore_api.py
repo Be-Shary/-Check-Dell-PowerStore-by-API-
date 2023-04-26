@@ -106,11 +106,13 @@ def check_capacity(hostname, limit):
         sys.exit(3)
 
     if verbose or raise_alert:
-        output += "\nCapacity - FREE:" + str(free) + "TB (" + str(free_procent) + "%), USED: " + str(
-            round(used_space, 2)) + "TB, TOTAL: " + str(round(total_space)) + "TB"
+        output += "\nCapacity - FREE:" + str(round(free, 2)) + "TB (" + str(free_procent) + "%), USED: " + str(
+             round(used_space, 2)) + "TB, TOTAL: " + str(round(total_space)) + "TB"
         if raise_alert:
             output += " (!!)"
         output += "\n-----------------------------"
+    if perf:
+        output += f'| USED={str(round(used_space, 2))}TB;{limit[0]};{limit[1]};0;{str(round(total_space))}'
 
 
 def check_volumegroup(hostname):
@@ -172,6 +174,7 @@ if __name__ == "__main__":
             volume - show volumes, checks if volume is operating normally
             volgroup - check volume groups, checks if it's protectable and write order consistent
             alert - show Critical and Major alerts (raise alert if there is no acknowledged)
+            capacity - check total capacity
                    """,
             formatter_class=RawTextHelpFormatter,
             usage=SUPPRESS)
@@ -180,12 +183,13 @@ if __name__ == "__main__":
         parser.add_argument("-p", metavar="api password", help="(Required) Your API username", required=True)
         parser.add_argument('-v', help="(Optional) List full output (not only alerts), default: off",
                             default=False, action="store_true")
+        parser.add_argument('-P', help="Enable performance data", default=False, action="store_true")
         parser.add_argument("-f", metavar="capacity",
                             help="(Not required) Raise alert if limit is hit: 80,90 as percent for WARNING,CRITICAL",
-                            required=False, default="0,0")
+                            required=False, default="80,90")
         parser.add_argument("-c", metavar="all mem psu fan disk ports volume volgroup alert",
                             help="(Required) List of checks, choose all, one or few.",
-                            nargs="+", choices=["all", "mem", "psu", "fan", "disk", "ports", "volume", "volgroup", "alert"], required=True)
+                            nargs="+", choices=["all", "mem", "psu", "fan", "disk", "ports", "volume", "volgroup", "alert","capacity"], required=True)
         args = parser.parse_args()
     except SystemExit as error:
         if error.code == 2:
@@ -202,6 +206,7 @@ if __name__ == "__main__":
     free_limit = args.f.split(",")
     verbose = args.v
     checks = args.c
+    perf = args.P
 
     if "all" in checks:
         hardware_checks = ["DIMM", "Power_Supply", "Fan", "Drive"]
@@ -225,14 +230,15 @@ if __name__ == "__main__":
         check_alerts(hostname)
     if "ports" in checks and not "all" in checks:
         check_ports(hostname)
+    if "capacity" in checks and not "all" in checks:
+        check_capacity(hostname, free_limit)
     if "all" in checks:
         check_volumes(hostname)
         check_alerts(hostname)
         check_volumegroup(hostname)
         check_ports(hostname)
-
-    if free_limit != 0:
         check_capacity(hostname, free_limit)
+
     if exit_code == 0:
         if verbose:
             print("OK: No problem detected.\n" + output)
